@@ -75,35 +75,31 @@ def extract_expenses(text: str, exclusions: List[str]) -> List[Expense]:
         # Revisar la siguiente línea si contiene cantidad y precio
         if i + 1 < len(lines):
             next_line = clean_text(lines[i + 1])
-            if ')' in next_line:
-                print(f'temp_description: {temp_description}')
-                print(f'next_line: {next_line}')
-                parts = next_line.split(')')
-                if len(parts) == 2:
-                    print(f"parts {parts}")
-                    try:
-                        precio_unidad=parts[0].split(' ')[1].strip().replace(',','.')
-                        print(f"precio_unidad {precio_unidad}")
-                        unit_price_str = parts[0].split(' ')[1].strip().replace(',','.')
-                        total_amount_str = parts[1].strip().replace(',', '.')
-                        unit_price = float(unit_price_str)
-                        total_amount = float(total_amount_str)
-                        quantity = total_amount / unit_price
-                        if quantity.is_integer():
-                            expenses.append(Expense(
-                                description=f'{temp_description} (x{int(quantity)} @ {unit_price:.2f} €)',
-                                amount=total_amount,
-                                category='default',
-                                date='2024-06-09'
-                            ))
-                            # Saltar la siguiente línea ya que ya ha sido procesada
-                            temp_description = None
-                            i += 2
-                            continue
-                    except ValueError:
+            print(f'temp_description: {temp_description}')
+            print(f'next_line: {next_line}')
+            parts = next_line.split(')')
+            if len(parts) == 2:
+                unit_price_str = parts[0].split(' ')[1].strip().replace(',', '.')
+                total_amount_str = parts[1].strip().replace(',', '.')
+                try:
+                    unit_price = float(unit_price_str)
+                    total_amount = float(total_amount_str)
+                    quantity = total_amount / unit_price
+                    if quantity.is_integer():
+                        expenses.append(Expense(
+                            description=f'{temp_description} (x{int(quantity)} @ {unit_price:.2f} €)',
+                            amount=total_amount,
+                            category='default',
+                            date='2024-06-09'
+                        ))
+                        # Saltar la siguiente línea ya que ya ha sido procesada
                         temp_description = None
-                        i += 1
+                        i += 2
                         continue
+                except ValueError:
+                    temp_description = None
+                    i += 1
+                    continue
 
         i += 1
 
