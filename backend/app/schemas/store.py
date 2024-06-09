@@ -1,7 +1,8 @@
 from pydantic import BaseModel
 
-class Ticket(BaseModel):
-    ticket_id: str
+class Store(BaseModel):
+    name: str
+    exclusions: str
 
     class Config:
         from_attributes = True
