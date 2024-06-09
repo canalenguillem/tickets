@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
 from app.models.store import StoreModel
 from app.schemas.store import Store
-from typing import List
+from app.schemas.store_list import StoreBase
+from typing import List  # Asegúrate de importar List
 
 def get_store_by_name(db: Session, name: str):
     return db.query(StoreModel).filter(StoreModel.name == name).first()
@@ -31,3 +32,11 @@ def update_store_exclusions(db: Session, store_name: str, new_exclusion: str):
         store.exclusions = ','.join(exclusions)
         db.commit()
     return stores
+
+def create_multiple_stores(db: Session, stores: List[StoreBase]):
+    created_stores = []
+    for store in stores:
+        db_store = get_store_by_name(db, store.name)
+        if not db_store:
+            created_stores.append(create_store(db, Store(name=store.name, exclusions=store.exclusions)))
+    return created_stores
